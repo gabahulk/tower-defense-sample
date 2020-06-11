@@ -1,61 +1,61 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class GamePiecePlacementController : MonoBehaviour
+namespace TowerDefence.GameController
 {
-    [SerializeField]
-    private GameObject GamePiecePrefab = default;
-    private string PlaceTagFilter = "PlaceableTerrain";
-
-    private KeyCode newTower = KeyCode.A; // debug
-    private GameObject currentGamePiece;
-
-    private void Update()
+    public class GamePiecePlacementController : MonoBehaviour
     {
-        HandleNewObjectEvent();
-        if (currentGamePiece == null)
-            return;
+        [SerializeField]
+        private GameObject GamePiecePrefab = default;
+        private string PlaceTagFilter = "PlaceableTerrain";
 
-        MoveCurrentPlaceableObjectToMouse();
-        if (Input.GetMouseButtonDown(0))
+        private KeyCode newTower = KeyCode.A; // debug
+        private GameObject currentGamePiece;
+
+        private void Update()
         {
-            CommitGamePiece();
-        }
-    }
-
-    private void CommitGamePiece()
-    {
-        currentGamePiece = null;
-    }
-
-    private void MoveCurrentPlaceableObjectToMouse()
-    {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        RaycastHit hitInfo;
-
-        if (Physics.Raycast(ray, out hitInfo))
-        {
-            if (hitInfo.collider.gameObject.CompareTag(PlaceTagFilter) && Quaternion.FromToRotation(Vector3.up, hitInfo.normal).eulerAngles == Vector3.zero)
-            {
-                currentGamePiece.transform.position = hitInfo.point;
-            }
-        }
-    }
-
-    public void HandleNewObjectEvent()
-    {
-        if (Input.GetKeyUp(newTower))
-        {
+            HandleNewObjectEvent();
             if (currentGamePiece == null)
+                return;
+
+            MoveCurrentPlaceableObjectToMouse();
+            if (Input.GetMouseButtonDown(0))
             {
-                currentGamePiece = Instantiate(GamePiecePrefab);
+                CommitGamePiece();
             }
-            else
+        }
+
+        private void CommitGamePiece()
+        {
+            currentGamePiece = null;
+        }
+
+        private void MoveCurrentPlaceableObjectToMouse()
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            RaycastHit hitInfo;
+
+            if (Physics.Raycast(ray, out hitInfo))
             {
-                Destroy(currentGamePiece);
+                if (hitInfo.collider.gameObject.CompareTag(PlaceTagFilter) && Quaternion.FromToRotation(Vector3.up, hitInfo.normal).eulerAngles == Vector3.zero)
+                {
+                    currentGamePiece.transform.position = hitInfo.point;
+                }
+            }
+        }
+
+        public void HandleNewObjectEvent()
+        {
+            if (Input.GetKeyUp(newTower))
+            {
+                if (currentGamePiece == null)
+                {
+                    currentGamePiece = Instantiate(GamePiecePrefab);
+                }
+                else
+                {
+                    Destroy(currentGamePiece);
+                }
             }
         }
     }

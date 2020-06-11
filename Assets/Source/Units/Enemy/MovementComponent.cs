@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
 
-namespace TowerDefence.Enemy
+namespace TowerDefence.Units.Enemy
 {
     public class MovementComponent : IMovementComponent
     {

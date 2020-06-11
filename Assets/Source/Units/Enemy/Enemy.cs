@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections;
+﻿using TowerDefence.Common.Health;
 using UnityEngine;
 using UnityEngine.AI;
 
-namespace TowerDefence.Enemy
+namespace TowerDefence.Units.Enemy
 {
     public class Enemy : MonoBehaviour, IEnemy
     {
@@ -18,43 +17,40 @@ namespace TowerDefence.Enemy
         [SerializeField]
         private HealthBar HealthBar = default;
 
+        public int Damage { get; private set; }
+
         private void Awake()
         {
             //debug while there is no spawner
             var config = ScriptableObject.CreateInstance<EnemyConfig>();
             config.MaxHealth = 10;
+            config.Damage = 5;
             Init(config);
         }
 
         public void Init(EnemyConfig config)
         {
-            movementComponent = new MovementComponent(NavMeshAgent, Destination);
             healthComponent = new HealthComponent(config.MaxHealth);
-            healthComponent.OnHealthPercentageChanged += OnHealthChanged;
+            healthComponent.OnHealthPercentageChanged += HealthBar.OnHealthChanged;
 
+            movementComponent = new MovementComponent(NavMeshAgent, Destination);
             movementComponent.SetDestination();
+
+            Damage = config.Damage;
         }
 
-        public void Update()
+        public void TakeDamage(int damage)
         {
-            if (Input.anyKeyDown)
-            {
-                healthComponent.UpdateHealth(-1);
-            }
-        }
-
-        private void OnHealthChanged(float healthPercentage)
-        {
-            if (healthPercentage <= 0)
+            healthComponent.UpdateHealth(-damage);
+            if (healthComponent.GetCurrentHealth() <= 0)
             {
                 Destroy(gameObject);
             }
-            HealthBar.SetHealthBarFillAmount(healthPercentage);
         }
 
         private void OnDestroy()
         {
-            healthComponent.OnHealthPercentageChanged -= OnHealthChanged;
+            healthComponent.OnHealthPercentageChanged -= HealthBar.OnHealthChanged;
         }
     }
 }

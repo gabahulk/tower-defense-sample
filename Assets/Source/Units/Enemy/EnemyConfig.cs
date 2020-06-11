@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 
-namespace TowerDefence.Enemy
+namespace TowerDefence.Units.Enemy
 {
     public class EnemyConfig : ScriptableObject
     {
         public int MaxHealth;
+        public int Damage;
     }
 }

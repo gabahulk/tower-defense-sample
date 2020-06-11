@@ -1,4 +1,4 @@
-﻿namespace TowerDefence.Enemy
+﻿namespace TowerDefence.Units.Enemy
 {
     public interface IMovementComponent
     {
