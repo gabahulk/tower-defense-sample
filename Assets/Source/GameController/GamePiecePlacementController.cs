@@ -6,7 +6,8 @@ using UnityEngine;
 public class GamePiecePlacementController : MonoBehaviour
 {
     [SerializeField]
-    private GameObject GamePiecePrefab;
+    private GameObject GamePiecePrefab = default;
+    private string PlaceTagFilter = "PlaceableTerrain";
 
     private KeyCode newTower = KeyCode.A; // debug
     private GameObject currentGamePiece;
@@ -14,14 +15,13 @@ public class GamePiecePlacementController : MonoBehaviour
     private void Update()
     {
         HandleNewObjectEvent();
+        if (currentGamePiece == null)
+            return;
 
-        if (currentGamePiece != null)
+        MoveCurrentPlaceableObjectToMouse();
+        if (Input.GetMouseButtonDown(0))
         {
-            MoveCurrentPlaceableObjectToMouse();
-            if (Input.GetMouseButtonDown(0))
-            {
-                CommitGamePiece();
-            }
+            CommitGamePiece();
         }
     }
 
@@ -38,14 +38,14 @@ public class GamePiecePlacementController : MonoBehaviour
 
         if (Physics.Raycast(ray, out hitInfo))
         {
-            if (hitInfo.collider.gameObject.CompareTag("PlaceableTerrain"))
+            if (hitInfo.collider.gameObject.CompareTag(PlaceTagFilter) && Quaternion.FromToRotation(Vector3.up, hitInfo.normal).eulerAngles == Vector3.zero)
             {
                 currentGamePiece.transform.position = hitInfo.point;
             }
         }
     }
 
-    private void HandleNewObjectEvent()
+    public void HandleNewObjectEvent()
     {
         if (Input.GetKeyUp(newTower))
         {
@@ -57,7 +57,6 @@ public class GamePiecePlacementController : MonoBehaviour
             {
                 Destroy(currentGamePiece);
             }
-
         }
     }
 }
