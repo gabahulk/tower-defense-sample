@@ -5,5 +5,6 @@ namespace TowerDefence.Units.RoadBlock
     public class RoadBlockConfig : ScriptableObject
     {
         public string PlaceableTerrainTag;
+        public int HealthDuration;
     }
 }

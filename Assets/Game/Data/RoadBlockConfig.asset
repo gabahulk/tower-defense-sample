@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: RoadBlockConfig
   m_EditorClassIdentifier: 
   PlaceableTerrainTag: Ground
+  HealthDuration: 10
