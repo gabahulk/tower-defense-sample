@@ -23,7 +23,7 @@ namespace TowerDefence.Units.Tower
             this.bulletPrefab = bulletPrefab;
         }
 
-        private void Start()
+        public void StartScanning()
         {
             InvokeRepeating(nameof(UpdateTarget), 0f, 0.5f);
         }

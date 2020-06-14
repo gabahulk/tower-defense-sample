@@ -9,7 +9,6 @@ namespace TowerDefence.GameController.Inventory
         public float TowerCooldown;
 
         public int NumberOfRoadBlock;
-        public float RoadBlockDuration;
         public float RoadBlockCooldown;
     }
 }

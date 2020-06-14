@@ -26,6 +26,12 @@ namespace TowerDefence.Units.Tower
             ShootingComponent.Init(Config.SightRange, Config.Damage, Config.RateOfFire, SpawnPoint, BulletPrefab);
 
             placeableUnitComponent.PlaceableTerrainTag = Config.PlaceableTerrainTag;
+            placeableUnitComponent.UnitPlacedEvent += OnTowerPlaced;
+        }
+
+        private void OnTowerPlaced()
+        {
+            ShootingComponent.StartScanning();
         }
 
         void Update()

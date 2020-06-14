@@ -24,7 +24,6 @@ namespace TowerDefence.GameController.Inventory
         private Coroutine towerCooldownCoroutine;
 
         private ObjectPooler roadBlockPool;
-        private Coroutine roadBlockCooldownCoroutine;
 
         private int availableTowers;
         private int availableRoadBlocks;
@@ -52,24 +51,25 @@ namespace TowerDefence.GameController.Inventory
 
         public void HandleNewTowerEvent()
         {
-            HandleNewObjectEvent(towerPool);
+            if (!towerPool.HasAvailableObject())
+                return;
+            var obj = towerPool.GetObject();
+            PlacementController.HandleNewObjectEvent(obj);
+
             availableTowers--;
             towerCooldownCoroutine = StartCoroutine(StartCooldown(TowerButton, config.TowerCooldown, TowerQuantityText, config.NumberOfTowers, availableTowers));
         }
 
         public void HandleNewRoadBlockEvent()
         {
-            HandleNewObjectEvent(roadBlockPool);
-            availableRoadBlocks--;
-            roadBlockCooldownCoroutine = StartCoroutine(StartCooldown(RoadBlockButton, config.RoadBlockCooldown, RoadBlockQuantityText, config.NumberOfRoadBlock, availableRoadBlocks));
-        }
-
-        private void HandleNewObjectEvent(ObjectPooler pool)
-        {
-            if (!pool.HasAvailableObject())
+            if (!roadBlockPool.HasAvailableObject())
                 return;
+            var obj = roadBlockPool.GetObject();
+            PlacementController.HandleNewObjectEvent(obj);
+            obj.GetComponent<RoadBlock>().OnDeathEvent += HandleReturnedObjectEvent;
+            RoadBlockButton.interactable = false;
 
-            PlacementController.HandleNewObjectEvent(pool.GetObject());
+            availableRoadBlocks--;
         }
 
         IEnumerator StartCooldown(Button button, float cooldownInSeconds, TMP_Text text, int maxQuantity, int quantity)
@@ -95,7 +95,6 @@ namespace TowerDefence.GameController.Inventory
                 maxQuantity = config.NumberOfTowers;
                 quantity = availableTowers;
                 StopCoroutine(towerCooldownCoroutine);
-
                 TowerButton.interactable = availableTowers > 0;
             }
             else if (obj.GetComponent<RoadBlock>() != null)
@@ -104,26 +103,12 @@ namespace TowerDefence.GameController.Inventory
                 text = RoadBlockQuantityText;
                 maxQuantity = config.NumberOfRoadBlock;
                 quantity = availableRoadBlocks;
-                StopCoroutine(roadBlockCooldownCoroutine);
+                StartCoroutine(StartCooldown(RoadBlockButton, config.RoadBlockCooldown, RoadBlockQuantityText, config.NumberOfRoadBlock, availableRoadBlocks));
                 RoadBlockButton.interactable = availableRoadBlocks > 0;
+                obj.GetComponent<RoadBlock>().OnDeathEvent -= HandleReturnedObjectEvent;
             }
 
             UpdateQuantityText(text, maxQuantity, quantity);
-        }
-
-        public bool HasTowerAvailable()
-        {
-            return HasObject(towerPool);
-        }
-
-        public bool HasRoadBlockAvailable()
-        {
-            return  HasObject(roadBlockPool);
-        }
-
-        private bool HasObject(ObjectPooler pool)
-        {
-            return pool.HasAvailableObject();
         }
     }
 }
